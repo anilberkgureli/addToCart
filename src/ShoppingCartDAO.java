@@ -10,6 +10,13 @@ public class ShoppingCartDAO {
         connection = DriverManager.getConnection(url, username, password);
     }
 
+    public int getLastItemID() throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT MAX(id) FROM products");
+        ResultSet resultSet = preparedStatement.executeQuery();
+        resultSet.next();
+        return resultSet.getInt(1);
+    }
+
     public void add(ShoppingCart item) throws SQLException {
         PreparedStatement checkIdStatement = connection.prepareStatement("SELECT COUNT(*) FROM products WHERE id = ?");
         checkIdStatement.setInt(1, item.getItemID());
@@ -61,5 +68,10 @@ public class ShoppingCartDAO {
             items[0] = new ShoppingCart(resultSet.getInt(1), resultSet.getString(2), resultSet.getInt(3), resultSet.getDouble(4));
         }
         return items;
+    }
+
+    public void clearCart() throws SQLException {
+        PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM products");
+        preparedStatement.executeUpdate();
     }
 }
